@@ -1,0 +1,201 @@
+public class Main {
+
+
+
+        //1. Node Class:
+        public static class Node{
+            int value;
+            //Node Constructor:
+            public Node(int value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+                this.parent = null;
+
+            }
+
+            Node left;
+            Node right;
+            Node parent;
+            int bf;
+            int height;
+
+
+        }
+        //2. Tree Class
+        public static class BalancedTree{
+            Node root;
+            int size;
+
+            public BalancedTree() {
+            }
+            //3.
+            public BalancedTree(int[] input){
+                for(int i = 0; i < input.length; i++){
+                      insert(root, input[i]);
+                      size++;
+                }
+
+
+            }
+
+        }
+        //4. Inorder Traversal
+        public static int[] inOrder(BalancedTree tree){
+               return convert(inOrder(tree.root));
+
+        }
+
+
+
+
+        //Helper Functions:
+        //Height(returns height of tree):
+        public static int h(Node node){
+            //Base Case
+            if(node.right == null && node.left == null){
+                return -1;
+            }
+            //recursive case
+            int left = h(node.left);
+            int right = h(node.left);
+
+            if (left > right){
+                return left + 1;
+            }else {
+                return right + 1;
+            }
+        }
+        //Balance Factor:
+        public static int bf(Node node){
+        return h(node.right) - h(node.left);
+        }
+
+        //Left Rotation:
+        public static Node leftRotation(Node node){
+        Node newParent = node.right;
+        node.right = newParent.left;
+        newParent.left = node;
+        update(node);
+        update(newParent);
+        return newParent;
+        }
+        //Right Rotation:
+        public static Node rightRotation(Node node){
+        Node newParent = node.left;
+        node.left = newParent.right;
+        newParent.right = node;
+        update(node);
+        update(newParent);
+        return newParent;
+        }
+        //leftleftcase:
+        public static Node leftleftCase(Node node){
+            return rightRotation(node);
+
+        }
+        //Leftrightcase:
+        public static Node leftrightCase(Node node){
+            node.left = leftRotation(node.left);
+            return leftleftCase(node);
+
+        }
+        //Rightrightcase:
+        public static Node rightrightCase(Node node){
+            return leftRotation(node);
+        }
+        //Rightleftcase:
+        public static Node rightleftCase(Node node){
+            node.right = rightRotation(node.right);
+            return rightrightCase(node);
+        }
+        public static void update(Node node){
+            // updates the height
+            node.height = h(node);
+            //updates the balance factor
+            node.bf = bf(node);
+
+        }
+        public static Node balance(Node node){
+            //left heavy
+            if(node.bf == -2){
+                //left left
+                if (node.left.bf <= 0){
+                    return leftleftCase(node);
+                }//leftrightcase
+                else return leftrightCase(node);
+            }
+            else if (node.bf == +2){
+                //rightrightcase
+                if(node.right.bf >= 0){
+                    return rightrightCase(node);
+                }
+                else //rightleftcase
+                    return rightRotation(node);
+            }
+            //there's balance
+            return node;
+        }
+        public static Node insert(Node node, int value){
+            //Base case
+            if (node == null) return new Node(value);
+            //greater than going down the left side of the tree
+            if (value > node.value){
+                node.left = insert(node.left, value);
+            }else node.right = insert(node.right,value);
+            //Updates the tree
+            update(node);
+            //Balances the tree
+            return balance(node);
+        }
+        public static ArrayList<Integer> inOrder(Node node){
+            ArrayList<Integer> array = new ArrayList<>();
+            if(node == null){
+                return array;
+            }
+            inOrder(node.left);
+            array.add(node.value);
+            inOrder(node.right);
+            return array;
+        }
+        public static int[] convert(ArrayList<Integer> arraylist){
+            int[] array = new int[arraylist.size()];
+            for(int i = 0; i < arraylist.size(); i++){
+                array[i] = arraylist.get(i);
+            }
+            return array;
+        }
+
+
+
+
+    public static void main(String[] args) {
+        int[] array = new int[5];
+        array[0] = 1;
+        array[1] = 2;
+        array[2] = 3;
+        array[3] = 4;
+        array[4] = 5;
+        BalancedTree tree = new BalancedTree();
+        System.out.println(tree.root);
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
